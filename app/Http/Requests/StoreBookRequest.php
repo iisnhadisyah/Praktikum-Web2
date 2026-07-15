@@ -2,31 +2,33 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBookRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'category_id' => ['required', 'integer', 'exists:categories.id'],
-            'title'       => ['required', 'string', 'max:255'],
-            'writer'       => ['required', 'string', 'max:255'],
-            'release_date'=> ['required', 'date'],
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric|min:1000', 
+            'name'  => 'required|string|max:255', 
         ];
+    }
+}
+
+public function messages() {
+    return {
+        'category_id_required' => 'Wajib Memiliki Category'
+        'category_id.exists' => 'Kategory Tidak Ditemukan'
+        'writer.max' => 'Nama Penulis Maksimal :max Karakter'
+        'writer.min' => 'Nama Penulis Minimal :min Karakter'
+        'title.max' => 'Judul Buku Maksimal :max Karakter'
+        'release_date.required' => 'Tanggal Terbit Wajib'
+        release_date.date => 'Format Tanggal Terbit Tidak'
     }
 }

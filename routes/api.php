@@ -2,7 +2,47 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Requests\StoreBookRequest;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::post('/books-test', function (Request $request) {
+    $validated = app(StoreBookRequest::class)->validateResolved();
+
+    return response()->json([
+        'message' => 'Sukses!',
+        'data' => $request->all()
+    ]);
+});
+
+Route::resource('Book', BookController::class);
+
+// Login
+Route::post('/login', [AuthController::class, 'login']);
+
+// Route Admin
+Route::prefix('admin')->group(function () {
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('items', ItemController::class);
+    Route::apiResource('suppliers', SupplierController::class);
+});
+
+// Product API
+// Read tidak perlu login
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{product}', [ProductController::class, 'show']);
+
+// Create, Update, Delete harus login
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{product}', [ProductController::class, 'update']);
+    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+});
